@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TickHub - Login/Signup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #f0f2f5;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            color: #65676b;
+        }
+
+        .tab.active {
+            color: #e50914;
+            border-bottom: 2px solid #e50914;
+            margin-bottom: -2px;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #1c1e21;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #dddfe2;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #e50914;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background: #e50914;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        button:hover {
+            background: #b2070f;
+        }
+
+        .error-message {
+            color: #ff3333;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .success-message {
+            color: #00c851;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .form {
+            display: none;
+        }
+
+        .form.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('login')">Login</div>
+            <div class="tab" onclick="showTab('signup')">Sign Up</div>
+        </div>
+
+        <form id="loginForm" class="form active" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" required>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" required>
+            </div>
+            <button type="submit">Login</button>
+            <div id="loginMessage" class="error-message"></div>
+        </form>
+
+        <form id="signupForm" class="form" onsubmit="handleSignup(event)">
+            <div class="form-group">
+                <label for="signupName">Full Name</label>
+                <input type="text" id="signupName" required>
+            </div>
+            <div class="form-group">
+                <label for="signupEmail">Email</label>
+                <input type="email" id="signupEmail" required>
+            </div>
+            <div class="form-group">
+                <label for="signupPassword">Password</label>
+                <input type="password" id="signupPassword" required>
+            </div>
+            <div class="form-group">
+                <label for="signupPhone">Phone Number</label>
+                <input type="tel" id="signupPhone" required>
+            </div>
+            <button type="submit">Sign Up</button>
+            <div id="signupMessage" class="error-message"></div>
+        </form>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5501';
+
+        // Check URL parameters to determine which tab to show
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // Show the appropriate tab based on URL parameter
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabParam = getUrlParameter('tab');
+            if (tabParam === 'signup') {
+                showTab('signup');
+            }
+        });
+
+        function showTab(tabName) {
+            // Update tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`.tab:${tabName === 'login' ? 'first-child' : 'last-child'}`).classList.add('active');
+
+            // Update forms
+            document.querySelectorAll('.form').forEach(form => {
+                form.classList.remove('active');
+            });
+            document.getElementById(`${tabName}Form`).classList.add('active');
+
+            // Clear messages
+            document.getElementById('loginMessage').textContent = '';
+            document.getElementById('signupMessage').textContent = '';
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.message || 'Login failed');
+                }
+
+                // Store user data
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('userId', data.userId);
+                localStorage.setItem('userName', data.userName);
+                localStorage.setItem('userEmail', data.userEmail);
+
+                // Redirect to home page
+                window.location.href = 'index.html';
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        async function handleSignup(event) {
+            event.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const phone = document.getElementById('signupPhone').value;
+            const messageElement = document.getElementById('signupMessage');
+
+            try {
+                const response = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, email, password, phone })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageElement.className = 'success-message';
+                    messageElement.textContent = 'Signup successful! Please login.';
+                    // Switch to login tab after 1 second
+                    setTimeout(() => {
+                        showTab('login');
+                        // Clear the signup form
+                        document.getElementById('signupForm').reset();
+                    }, 1000);
+                } else {
+                    messageElement.className = 'error-message';
+                    messageElement.textContent = data.message || 'Signup failed. Please try again.';
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                messageElement.className = 'error-message';
+                messageElement.textContent = 'An error occurred. Please try again.';
+            }
+        }
+
+        // Add event listeners to forms
+        document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        document.getElementById('signupForm').addEventListener('submit', handleSignup);
+    </script>
+</body>
+</html> 

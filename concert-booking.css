@@ -1,0 +1,315 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f5f5f5;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.date-selection-header {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.date-selection {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.date-btn {
+    padding: 10px 24px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    min-width: 100px;
+}
+
+.date-btn:hover,
+.date-btn.selected {
+    background: #333;
+    color: white;
+    border-color: #333;
+}
+
+.venues-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.venue-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.venue-card h2 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.venue-type {
+    margin: 8px 0 16px;
+    color: #666;
+    font-size: 14px;
+}
+
+.time-slots {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.time-btn {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    color: #333;
+}
+
+.time-btn:hover {
+    border-color: #333;
+    background: white;
+}
+
+.concert-info {
+    text-align: center;
+    margin-bottom: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.concert-info h1 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+.concert-details {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    color: #ddd;
+    font-size: 1.1rem;
+}
+
+.price-categories {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.price-category {
+    padding: 10px 20px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.seat-color-premium {
+    width: 15px;
+    height: 15px;
+    background: #ffd700;
+    border-radius: 3px;
+}
+
+.seat-color-executive {
+    width: 15px;
+    height: 15px;
+    background: #c0c0c0;
+    border-radius: 3px;
+}
+
+.seat-color-normal {
+    width: 15px;
+    height: 15px;
+    background: #cd7f32;
+    border-radius: 3px;
+}
+
+.stadium-container {
+    position: relative;
+    width: 100%;
+    max-width: 1000px;
+    height: 800px;
+    margin: 50px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stage {
+    width: 150px;
+    height: 150px;
+    background: linear-gradient(45deg, #ff4e50, #f9d423);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    color: white;
+    text-transform: uppercase;
+    box-shadow: 0 0 50px rgba(255, 78, 80, 0.5);
+    z-index: 10;
+}
+
+.seating-area {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.section {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+}
+
+.block {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Position premium blocks in outer circle */
+.premium-section .block:nth-child(1) { transform: rotate(0deg) translateY(-350px); }
+.premium-section .block:nth-child(2) { transform: rotate(72deg) translateY(-350px); }
+.premium-section .block:nth-child(3) { transform: rotate(144deg) translateY(-350px); }
+.premium-section .block:nth-child(4) { transform: rotate(216deg) translateY(-350px); }
+.premium-section .block:nth-child(5) { transform: rotate(288deg) translateY(-350px); }
+
+/* Position executive blocks in middle circle */
+.executive-section .block:nth-child(1) { transform: rotate(0deg) translateY(-250px); }
+.executive-section .block:nth-child(2) { transform: rotate(72deg) translateY(-250px); }
+.executive-section .block:nth-child(3) { transform: rotate(144deg) translateY(-250px); }
+.executive-section .block:nth-child(4) { transform: rotate(216deg) translateY(-250px); }
+.executive-section .block:nth-child(5) { transform: rotate(288deg) translateY(-250px); }
+
+/* Position normal blocks in inner circle */
+.normal-section .block:nth-child(1) { transform: rotate(0deg) translateY(-150px); }
+.normal-section .block:nth-child(2) { transform: rotate(72deg) translateY(-150px); }
+.normal-section .block:nth-child(3) { transform: rotate(144deg) translateY(-150px); }
+.normal-section .block:nth-child(4) { transform: rotate(216deg) translateY(-150px); }
+.normal-section .block:nth-child(5) { transform: rotate(288deg) translateY(-150px); }
+
+.row {
+    display: flex;
+    gap: 5px;
+    transform-origin: center bottom;
+}
+
+.premium-section .row { transform: rotate(0deg); }
+.executive-section .row { transform: rotate(0deg); }
+.normal-section .row { transform: rotate(0deg); }
+
+.seat {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.block-label {
+    position: absolute;
+    top: -25px;
+    white-space: nowrap;
+    font-size: 0.8rem;
+    color: #ddd;
+    transform: rotate(0deg);
+}
+
+.legend {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+}
+
+.booking-summary {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 30px;
+    text-align: center;
+}
+
+.booking-summary h2 {
+    margin-bottom: 15px;
+}
+
+.selected-seats {
+    margin: 10px 0;
+}
+
+.total-amount {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 15px 0;
+}
+
+.book-button {
+    background: #e50914;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.book-button:hover {
+    background: #b2070f;
+} 

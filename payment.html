@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - TickHub</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .booking-details, .payment-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .upi-section {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .qr-code {
+            max-width: 200px;
+            margin: 20px auto;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .primary-btn {
+            background-color: #007bff;
+            color: white;
+        }
+        .secondary-btn {
+            background-color: #6c757d;
+            color: white;
+        }
+        .skip-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        .copy-btn {
+            background-color: #17a2b8;
+            color: white;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+        }
+        .detail-row span:first-child {
+            font-weight: bold;
+            color: #495057;
+        }
+        .detail-row span:last-child {
+            color: #0056b3;
+        }
+        .booking-details h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Complete Your Payment</h1>
+        
+        <div class="booking-details">
+            <h2>Booking Details</h2>
+            <div class="detail-row">
+                <span>Movie:</span>
+                <span id="movieName"></span>
+            </div>
+            <div class="detail-row">
+                <span>Theater:</span>
+                <span id="theaterName"></span>
+            </div>
+            <div class="detail-row">
+                <span>Date:</span>
+                <span id="showDate"></span>
+            </div>
+            <div class="detail-row">
+                <span>Time:</span>
+                <span id="showTime"></span>
+            </div>
+            <div class="detail-row">
+                <span>Seats:</span>
+                <span id="selectedSeats"></span>
+            </div>
+            <div class="detail-row">
+                <span>Total Amount:</span>
+                <span id="totalAmount"></span>
+            </div>
+        </div>
+
+        <div class="payment-section">
+            <h2>UPI Payment</h2>
+            <div class="upi-section">
+                <img src="images/qr-code.jpg" alt="UPI QR Code" class="qr-code">
+                <p>UPI ID: <span id="upiId">tirthbutani8223@oksbi</span></p>
+                <button onclick="copyUpiId()" class="copy-btn">Copy UPI ID</button>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <input type="text" id="transactionId" placeholder="Enter UPI Transaction ID">
+                <button onclick="verifyPayment()" class="primary-btn">Verify Payment</button>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <button onclick="skipPayment()" class="skip-btn">Skip Payment & Generate Ticket</button>
+        </div>
+    </div>
+
+    <script>
+        // Function to get query parameters from URL
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            console.log('Raw URL params:', Object.fromEntries(params.entries()));
+            
+            // Get and decode the movie name
+            const movieName = params.get('movieName');
+            console.log('Raw movie name from URL:', movieName);
+            
+            // Get and decode the seats parameter
+            let selectedSeats = [];
+            const seatsParam = params.get('seats');
+            console.log('Raw seats parameter:', seatsParam);
+            
+            if (seatsParam) {
+                try {
+                    // First try to parse as JSON array
+                    if (seatsParam.startsWith('[')) {
+                        selectedSeats = JSON.parse(decodeURIComponent(seatsParam));
+                    } else {
+                        // If not JSON, try comma-separated format
+                        selectedSeats = decodeURIComponent(seatsParam).split(',');
+                    }
+                    // Clean up any malformed seat numbers
+                    selectedSeats = selectedSeats.map(seat => seat.replace(/['"]/g, '').trim());
+                    console.log('Parsed seats:', selectedSeats);
+                } catch (error) {
+                    console.error('Error parsing seats:', error);
+                    selectedSeats = decodeURIComponent(seatsParam).split(',');
+                }
+            }
+
+            // Get and parse the total amount
+            const totalAmount = parseFloat(params.get('totalAmount')) || 0;
+            const ticketPrice = parseFloat(params.get('ticketPrice')) || 200;
+
+            const bookingDetails = {
+                movieName: movieName ? decodeURIComponent(movieName) : 'Not specified',
+                theaterName: params.get('theaterName') || 'Not specified',
+                showDate: params.get('showDate') || 'Not specified',
+                showTime: params.get('showTime') || 'Not specified',
+                selectedSeats: selectedSeats,
+                ticketPrice: ticketPrice,
+                totalAmount: totalAmount || (selectedSeats.length * ticketPrice)
+            };
+
+            console.log('Processed booking details:', bookingDetails);
+            return bookingDetails;
+        }
+
+        function generateTicketDetails(bookingDetails, ticketNumber, paymentStatus) {
+            // Ensure seats are properly formatted
+            const seats = Array.isArray(bookingDetails.selectedSeats) ? 
+                bookingDetails.selectedSeats : 
+                (typeof bookingDetails.selectedSeats === 'string' ? 
+                    bookingDetails.selectedSeats.split(',') : []);
+
+            // Group seats by row
+            const seatsByRow = seats.reduce((acc, seat) => {
+                const row = seat.match(/[A-Z]/)?.[0] || 'X';
+                if (!acc[row]) acc[row] = [];
+                acc[row].push(seat);
+                return acc;
+            }, {});
+
+            return {
+                ticketNumber: ticketNumber,
+                movieName: bookingDetails.movieName,
+                theaterName: bookingDetails.theaterName,
+                showDate: bookingDetails.showDate,
+                showTime: bookingDetails.showTime,
+                paymentStatus: paymentStatus,
+                bookingDate: new Date().toLocaleString('en-IN', { 
+                    timeZone: 'Asia/Kolkata',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                }),
+                seatDetails: {
+                    count: seats.length,
+                    seats: seats,
+                    seatsByRow: seatsByRow,
+                    pricePerSeat: parseFloat(bookingDetails.ticketPrice) || 200,
+                    totalAmount: parseFloat(bookingDetails.totalAmount) || (seats.length * (parseFloat(bookingDetails.ticketPrice) || 200))
+                }
+            };
+        }
+
+        function skipPayment() {
+            const bookingDetails = JSON.parse(localStorage.getItem('bookingDetails'));
+            if (!bookingDetails) {
+                console.error('No booking details found in localStorage');
+                return;
+            }
+
+            const ticketNumber = 'SKIP-' + Date.now();
+            const ticketDetails = generateTicketDetails(bookingDetails, ticketNumber, 'SKIPPED');
+            
+            console.log('Generated ticket details:', ticketDetails);
+            localStorage.setItem('ticketDetails', JSON.stringify(ticketDetails));
+
+            // Send data to server in background
+            fetch('http://localhost:5501/skip-payment-generate-ticket', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(ticketDetails)
+            });
+
+            // Redirect immediately without waiting for server response
+            window.location.href = '/booking-confirmation.html';
+        }
+
+        function verifyPayment() {
+            const transactionId = document.getElementById('transactionId').value;
+            if (!transactionId) {
+                alert('Please enter the transaction ID');
+                return;
+            }
+
+            const bookingDetails = JSON.parse(localStorage.getItem('bookingDetails'));
+            if (!bookingDetails) {
+                console.error('No booking details found in localStorage');
+                return;
+            }
+
+            const ticketNumber = 'TH' + Date.now();
+            const ticketDetails = generateTicketDetails(bookingDetails, ticketNumber, 'PAID');
+            ticketDetails.transactionId = transactionId;
+
+            fetch('http://localhost:5501/verify-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(ticketDetails)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    localStorage.setItem('ticketDetails', JSON.stringify(ticketDetails));
+                    window.location.href = '/booking-confirmation.html';
+                } else {
+                    alert('Payment verification failed. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred during payment verification. Please try again.');
+            });
+        }
+
+        window.onload = function() {
+            // Add debugging for URL
+            console.log('Current URL:', window.location.href);
+            
+            // Get booking details from URL parameters first
+            const urlBookingDetails = getQueryParams();
+            console.log('URL booking details:', urlBookingDetails);
+
+            // Get existing details from localStorage (if any)
+            const storedDetails = JSON.parse(localStorage.getItem('bookingDetails')) || {};
+            console.log('Stored booking details:', storedDetails);
+
+            // Merge with URL parameters taking precedence over localStorage
+            const bookingDetails = { ...storedDetails, ...urlBookingDetails };
+            console.log('Merged booking details:', bookingDetails);
+            
+            // Set default values if details are still missing
+            const defaults = {
+                movieName: 'Not specified',
+                theaterName: 'Not specified',
+                showDate: 'Not specified',
+                showTime: 'Not specified',
+                selectedSeats: [],
+                totalAmount: 0,
+                ticketPrice: 200
+            };
+
+            // Merge defaults with actual booking details
+            const details = { ...defaults, ...bookingDetails };
+            console.log('Final details with defaults:', details);
+
+            // Update DOM with booking details - with extra validation
+            const movieNameElement = document.getElementById('movieName');
+            if (movieNameElement) {
+                const displayMovieName = details.movieName !== 'Not specified' 
+                    ? decodeURIComponent(details.movieName) 
+                    : 'Not specified';
+                console.log('Setting movie name display to:', displayMovieName);
+                movieNameElement.textContent = displayMovieName;
+            } else {
+                console.error('Movie name element not found in DOM');
+            }
+
+            // Ensure selectedSeats is always an array
+            if (!Array.isArray(details.selectedSeats)) {
+                details.selectedSeats = details.selectedSeats ? String(details.selectedSeats).split(',') : [];
+            }
+            console.log('Selected seats after array check:', details.selectedSeats);
+
+            // Format seats and calculate total amount
+            if (details.selectedSeats.length > 0) {
+                const seatCount = details.selectedSeats.length;
+                details.totalAmount = seatCount * details.ticketPrice;
+                
+                // Clean up seat format if needed
+                details.selectedSeats = details.selectedSeats.map(seat => {
+                    // Remove any quotes or extra spaces
+                    return seat.replace(/['"]/g, '').trim();
+                });
+
+                details.selectedSeats = details.selectedSeats.sort((a, b) => {
+                    const rowA = a.match(/[A-Z]/)?.[0] || '';
+                    const rowB = b.match(/[A-Z]/)?.[0] || '';
+                    const numA = parseInt(a.match(/\d+/)?.[0] || '0');
+                    const numB = parseInt(b.match(/\d+/)?.[0] || '0');
+                    
+                    if (rowA === rowB) {
+                        return numA - numB;
+                    }
+                    return rowA.localeCompare(rowB);
+                });
+                console.log('Sorted and cleaned seats:', details.selectedSeats);
+            }
+
+            // Format the date if it exists and is not the default value
+            if (details.showDate !== 'Not specified') {
+                try {
+                    const date = new Date(details.showDate);
+                    if (!isNaN(date)) {
+                        details.showDate = date.toLocaleDateString('en-IN', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error formatting date:', error);
+                }
+            }
+
+            // Update DOM with booking details
+            document.getElementById('theaterName').textContent = details.theaterName;
+            document.getElementById('showDate').textContent = details.showDate;
+            document.getElementById('showTime').textContent = details.showTime;
+            
+            // Display selected seats with row grouping
+            if (details.selectedSeats.length > 0) {
+                const seatsByRow = details.selectedSeats.reduce((acc, seat) => {
+                    const row = seat.match(/[A-Z]/)[0];
+                    if (!acc[row]) acc[row] = [];
+                    acc[row].push(seat);
+                    return acc;
+                }, {});
+
+                const seatDisplay = Object.entries(seatsByRow)
+                    .map(([row, seats]) => `Row ${row}: ${seats.join(', ')}`)
+                    .join(' | ');
+
+                document.getElementById('selectedSeats').textContent = 
+                    `${seatDisplay} (${details.selectedSeats.length} seats × ₹${details.ticketPrice})`;
+            } else {
+                document.getElementById('selectedSeats').textContent = 'No seats selected';
+            }
+
+            document.getElementById('totalAmount').textContent = '₹' + (parseFloat(details.totalAmount) || 0).toFixed(2);
+
+            // Store the updated details in localStorage
+            localStorage.setItem('bookingDetails', JSON.stringify(details));
+
+            // Remove button disabling - allow skip payment regardless of seat selection
+            const paymentButton = document.querySelector('.primary-btn');
+            const skipButton = document.querySelector('.skip-btn');
+            
+            paymentButton.style.opacity = '1';
+            skipButton.style.opacity = '1';
+            paymentButton.style.cursor = 'pointer';
+            skipButton.style.cursor = 'pointer';
+            paymentButton.disabled = false;
+            skipButton.disabled = false;
+        };
+
+        function copyUpiId() {
+            const upiId = document.getElementById('upiId').textContent;
+            navigator.clipboard.writeText(upiId);
+            alert('UPI ID copied to clipboard!');
+        }
+    </script>
+</body>
+</html> 

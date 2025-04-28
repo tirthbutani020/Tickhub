@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmation - TickHub</title>
+    <!-- Add jsPDF library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .ticket {
+            border: 2px solid #007bff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+        .ticket-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .ticket-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .detail-item {
+            padding: 10px;
+            background-color: white;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+        .detail-label {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+        .detail-value {
+            color: #212529;
+        }
+        .download-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        .download-btn:hover {
+            background-color: #218838;
+        }
+        .back-btn {
+            background-color: #6c757d;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .back-btn:hover {
+            background-color: #5a6268;
+        }
+        @media print {
+            .no-print {
+                display: none;
+            }
+            .container {
+                box-shadow: none;
+            }
+            .ticket {
+                border: 2px solid #000;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="ticket-header">
+            <h1>Booking Confirmed!</h1>
+            <p>Your movie ticket has been generated successfully.</p>
+        </div>
+
+        <div class="ticket" id="ticket">
+            <div class="ticket-header">
+                <h2>TickHub Movie Ticket</h2>
+                <p id="ticketNumber"></p>
+            </div>
+
+            <div class="ticket-details">
+                <div class="detail-item">
+                    <div class="detail-label">Movie</div>
+                    <div class="detail-value" id="movieName"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Theater</div>
+                    <div class="detail-value" id="theaterName"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Date</div>
+                    <div class="detail-value" id="showDate"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Time</div>
+                    <div class="detail-value" id="showTime"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Seats</div>
+                    <div class="detail-value" id="seats"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Amount</div>
+                    <div class="detail-value" id="amount"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Payment Status</div>
+                    <div class="detail-value" id="paymentStatus"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Booking Date</div>
+                    <div class="detail-value" id="bookingDate"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="no-print">
+            <button onclick="downloadTicketAsPDF()" class="download-btn">Download Ticket</button>
+            <button onclick="window.location.href='index.html'" class="back-btn">Back to Home</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ticketDetails = JSON.parse(localStorage.getItem('ticketDetails')) || {};
+            
+            // Display ticket details
+            document.getElementById('ticketNumber').textContent = `Ticket #: ${ticketDetails.ticketNumber || ''}`;
+            document.getElementById('movieName').textContent = ticketDetails.movieName || '';
+            document.getElementById('theaterName').textContent = ticketDetails.theaterName || '';
+            document.getElementById('showDate').textContent = ticketDetails.showDate || '';
+            document.getElementById('showTime').textContent = ticketDetails.showTime || '';
+            document.getElementById('seats').textContent = ticketDetails.seats?.join(', ') || '';
+            document.getElementById('amount').textContent = `₹${ticketDetails.totalAmount || '0'}`;
+            document.getElementById('paymentStatus').textContent = ticketDetails.paymentStatus || 'SKIPPED';
+            document.getElementById('bookingDate').textContent = ticketDetails.bookingDate || new Date().toLocaleString();
+
+            // Auto-download ticket if it's from skip payment
+            if (ticketDetails.paymentStatus === 'SKIPPED') {
+                downloadTicketAsPDF();
+            }
+        });
+
+        function downloadTicketAsPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const ticketDetails = JSON.parse(localStorage.getItem('ticketDetails')) || {};
+
+            // Set font
+            doc.setFont('helvetica');
+
+            // Add header
+            doc.setFontSize(24);
+            doc.text('TickHub Movie Ticket', 105, 20, { align: 'center' });
+            
+            // Add ticket number
+            doc.setFontSize(12);
+            doc.text(`Ticket #: ${ticketDetails.ticketNumber}`, 105, 30, { align: 'center' });
+
+            // Add horizontal line
+            doc.line(20, 35, 190, 35);
+
+            // Add ticket details
+            doc.setFontSize(12);
+            const startY = 50;
+            const lineHeight = 10;
+            
+            // Left column
+            doc.text('Movie:', 20, startY);
+            doc.text('Theater:', 20, startY + lineHeight);
+            doc.text('Date:', 20, startY + lineHeight * 2);
+            doc.text('Time:', 20, startY + lineHeight * 3);
+            doc.text('Seats:', 20, startY + lineHeight * 4);
+            doc.text('Amount:', 20, startY + lineHeight * 5);
+            doc.text('Payment Status:', 20, startY + lineHeight * 6);
+            doc.text('Booking Date:', 20, startY + lineHeight * 7);
+
+            // Right column (values)
+            doc.text(ticketDetails.movieName || '', 60, startY);
+            doc.text(ticketDetails.theaterName || '', 60, startY + lineHeight);
+            doc.text(ticketDetails.showDate || '', 60, startY + lineHeight * 2);
+            doc.text(ticketDetails.showTime || '', 60, startY + lineHeight * 3);
+            doc.text(ticketDetails.seats?.join(', ') || '', 60, startY + lineHeight * 4);
+            doc.text(`₹${ticketDetails.totalAmount || '0'}`, 60, startY + lineHeight * 5);
+            doc.text(ticketDetails.paymentStatus || 'SKIPPED', 60, startY + lineHeight * 6);
+            doc.text(ticketDetails.bookingDate || '', 60, startY + lineHeight * 7);
+
+            // Add footer
+            doc.line(20, 140, 190, 140);
+            doc.setFontSize(10);
+            doc.text('Please show this ticket at the theater entrance', 105, 150, { align: 'center' });
+            doc.text('Thank you for booking with TickHub!', 105, 160, { align: 'center' });
+
+            // Save the PDF
+            const fileName = `TickHub_${ticketDetails.movieName}_${ticketDetails.ticketNumber}.pdf`;
+            doc.save(fileName);
+        }
+    </script>
+</body>
+</html> 

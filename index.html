@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>TickHub</title>
+    <link rel="icon" type="image/x-icon" href="Web_logo.jpg">
+
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500&display=swap">
+    <!-- For icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"> 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Navbar specific styles */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2.5%;
+            height: 64px;
+            position: relative;
+            background-color: rgb(51, 53, 69);
+        }
+
+        .brand-logo {
+            height: 40px;
+            margin-right: 20px;
+        }
+
+        .input {
+            position: relative;
+            width: 50%;
+            display: flex;
+            align-items: center;
+        }
+
+        .input input {
+            width: 100%;
+            height: 40px;
+            padding-left: 40px;
+            border-radius: 4px;
+            border: none;
+            outline: none;
+            background: #ffffff;
+            color: #1c1e21;
+        }
+
+        .input i {
+            position: absolute;
+            left: 10px;
+            color: #666;
+        }
+
+        .right-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-left: 20px;
+        }
+
+        .auth-btn {
+            color: white;
+            padding: 6px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 72px;
+            height: 36px;
+            border: 1px solid #e50914;
+            transition: all 0.3s ease;
+        }
+
+        .auth-btn:first-child {
+            background-color: #e50914;
+        }
+
+        .auth-btn:last-child {
+            background-color: transparent;
+            border-color: rgba(255, 255, 255, 0.7);
+        }
+
+        .auth-btn:hover {
+            color: white;
+            text-decoration: none;
+        }
+
+        .auth-btn:first-child:hover {
+            background-color: #b2070f;
+        }
+
+        .auth-btn:last-child:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .location {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .location:hover {
+            color: white;
+            text-decoration: none;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+        }
+
+        .user-profile.active {
+            display: flex;
+        }
+
+        .username {
+            color: white;
+            font-size: 14px;
+            padding: 6px 12px;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #ff4757;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: rgba(255, 71, 87, 0.1);
+        }
+
+        .auth-buttons.hidden {
+            display: none;
+        }
+
+        .book-btn {
+            display: block;
+            width: 90%;
+            margin: 10px auto;
+            padding: 8px 0;
+            background-color: #e50914;
+            color: white;
+            text-align: center;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .book-btn:hover {
+            background-color: #b2070f;
+            color: white;
+            text-decoration: none;
+        }
+
+        .card {
+            position: relative;
+            padding-bottom: 45px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- Wrapper -->
+    <div class="wrapper">
+
+
+        <!-- Content -->
+        <div class="content">
+
+            <nav class="navbar">
+                <img src="logo.jpg" class="brand-logo" alt="" />
+                <div class='input'>
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input className='search' placeholder='Search for Movies, Events, Plays, Sports, and Activities'></input>
+                </div>
+                <div class="right-container">
+                    <a href="#" class="location">India</a>
+                    <div class="user-profile">
+                        <span class="username">tirth</span>
+                        <button class="logout-btn" onclick="handleLogout()">Logout</button>
+                    </div>
+                </div>
+            </nav>
+
+       
+
+            <!-- For slide effect -->
+            <div class="slider">
+                <div class="slides">
+                    <!-- Radio buttons for navigation -->
+                    <input type="radio" name="radio-btn" id="slide1" checked>
+                    <input type="radio" name="radio-btn" id="slide2">
+                    <input type="radio" name="radio-btn" id="slide3">
+                    <input type="radio" name="radio-btn" id="slide4">
+        
+                    <!-- Slide Images -->
+                    <div class="slide first">
+                        <img src="images/slider1.png" alt="Movie 1">
+                    </div>
+                    <div class="slide">
+                        <img src="images/slide2.jpg" alt="Movie 2">
+                    </div>
+                    <div class="slide">
+                        <img src="images/slider3.jpg" alt="Movie 3">
+                    </div>
+                    <div class="slide">
+                        <img src="images/slider4.jpg" alt="Movie 4">
+                    </div>
+        
+                    <!-- Navigation Auto Slide -->
+                    <div class="nav-auto">
+                        <div class="auto-btn1"></div>
+                        <div class="auto-btn2"></div>
+                        <div class="auto-btn3"></div>
+                        <div class="auto-btn4"></div>
+                    </div>
+                </div>
+        
+                <!-- Manual Navigation -->
+                <div class="nav-manual">
+                    <label for="slide1" class="manual-btn1" id="1"></label>
+                    <label for="slide2" class="manual-btn2" id="2"></label>
+                    <label for="slide3" class="manual-btn3" id="3"></label>
+                    <label for="slide4" class="manual-btn4" id="4"></label>
+                </div>
+        
+            </div>
+
+ 
+            <h1 class="title">Recommended Movies</h1>
+            <div class="movies-list">
+                <div class="card-container">
+
+                    <div class="movie">
+                        <div class="card">
+                            <a href="movie.html?id=pushpa2"><img src="images/movie1.jpeg" class="card-img" alt=""> </a>
+                            <div class="card-body">
+                                <i class="fa-solid fa-heart"></i>
+                                <p>93% &ThinSpace; 92.8K votes</p>
+                            </div>
+                            <a href="seat-booking.html" class="book-btn">Book Tickets</a>
+                        </div>
+                        <h3>Pushpa-2</h3>
+                        <p class="detail">Drama/Thriller</p>
+                    </div>
+
+                    <div class="movie">
+                        <div class="card">
+                            <a href="movie.html?id=skyforce"><img src="images/movie2.jpg" class="card-img" alt=""> </a>
+                            <div class="card-body">
+                                <i class="fa-solid fa-heart"></i>
+                                <p>92% &ThinSpace; 16K votes</p>
+                            </div>
+                            <a href="seat-booking.html" class="book-btn">Book Tickets</a>
+                        </div>
+                        <h3>Sky Force</h3>
+                        <p class="detail">Action/War film/Aerial actioner</p>
+                    </div>
+
+                    <div class="movie">
+                        <div class="card">
+                            <a href="movie.html?id=fastx"><img src="images/movie3.jpeg" class="card-img" alt=""> </a>
+                            <div class="card-body">
+                                <i class="fa-solid fa-heart"></i>
+                                <p>94% &ThinSpace; 14K votes</p>
+                            </div>
+                            <a href="seat-booking.html" class="book-btn">Book Tickets</a>
+                        </div>
+                        <h3>Fast X</h3>
+                        <p class="detail">action/adventure/crime</p>
+                    </div>
+
+                    <div class="movie">
+                        <div class="card">
+                            <a href="movie.html?id=yjhd"><img src="images/movie4.jpg" class="card-img" alt=""> </a>
+                            <div class="card-body">
+                                <i class="fa-solid fa-heart"></i>
+                                <p>59% &ThinSpace; 74K votes</p>
+                            </div>
+                            <a href="seat-booking.html" class="book-btn">Book Tickets</a>
+                        </div>
+                        <h3>Yee Jawani Hain Deewani</h3>
+                        <p class="detail">Romantic comedy/drama</p>
+                    </div>
+
+                    <div class="movie">
+                        <div class="card">
+                            <a href="movie.html?id=babyjohn"><img src="images/movie5.jpeg" class="card-img" alt=""> </a>
+                            <div class="card-body">
+                                <i class="fa-solid fa-heart"></i>
+                                <p>87% &ThinSpace; 34K votes</p>
+                            </div>
+                            <a href="seat-booking.html" class="book-btn">Book Tickets</a>
+                        </div>
+                        <h3>Baby John</h3>
+                        <p class="detail">Action/Drama</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- banner -->
+            <section class="banner">
+                <div class="banner-content">
+                    <img src="images/banner.jpg" alt="">
+                </div>
+            </section>
+
+            <h1 class="title-enter">The Best of Entertainment</h1>
+            <div class="movies-list">
+                <div class="card-container">
+                    <div class="movie">
+                        <div class="card">
+                            <a href="movie.html?id=divine"><img src="images/Divine.jpg" class="card-img" alt=""> </a>
+                            <div class="card-body">
+                                <i class="fa-solid fa-heart"></i>
+                                <p>95% &ThinSpace; 18.5K votes</p>
+                            </div>
+                            <a href="seat-booking.html" class="book-btn">Book Tickets</a>
+                        </div>
+                        <h3>DIVINE</h3>
+                        <p class="detail">Hip Hop | 3hrs 30mins 
+                            <p> 10-March-25 at 5:00 PM</p>    
+                        </p>
+                            
+                    </div>
+
+                    <div class="movie">
+                        <div class="card">
+                            <a href="movie.html?id=adityagadhvi"><img src="images/aditya_gadhvi.jpg" class="card-img" alt=""> </a>
+                            <div class="card-body">
+                                <i class="fa-solid fa-heart"></i>
+                                <p>85% &ThinSpace; 22.7K votes</p>
+                            </div>
+                            <a href="seat-booking.html" class="book-btn">Book Tickets</a>
+                        </div>
+                        <h3>ADITYA GADHVI </h3>
+                        <p class="detail">Gujarati  | 10yrs + | 3hrs 30mins
+                            <p> 22-March-25 at 5:00 PM</p>
+                        </p>
+                    </div>
+
+                    <div class="movie">
+                        <div class="card">
+                            <a href="movie.html?id=kailashkher"><img src="images/kailash_kher.jpg" class="card-img" alt=""> </a>
+                            <div class="card-body">
+                                <i class="fa-solid fa-heart"></i>
+                                <p>64% &ThinSpace; 1800 votes</p>
+                            </div>
+                            <a href="seat-booking.html" class="book-btn">Book Tickets</a>
+                        </div>
+                        <h3>KAILASH KHER</h3>
+                        <p class="detail">Sufi | Hindi | 3hrs
+                            <p> 1-March-25 at 7:00 PM</p>
+                        </p>
+                    </div>
+
+                    <div class="movie">
+                        <div class="card">
+                            <a href="movie.html?id=monalithakur"><img src="images/monali_thakur.jpg" class="card-img" alt=""> </a>
+                            <div class="card-body">
+                                <i class="fa-solid fa-heart"></i>
+                                <p>59% &ThinSpace; 58K votes</p>
+                            </div>
+                            <a href="seat-booking.html" class="book-btn">Book Tickets</a>
+                        </div>
+                        <h3>MONALI THAKUR</h3>
+                        <p class="detail">Bollywood, Retro | Hindi | 2hrs
+                            <p>08-March-25 at 7:00 PM</p>
+                        </p>
+                    </div>
+
+                    <div class="movie">
+                        <div class="card">
+                            <a href="movie.html?id=anuvjain"><img src="images/anuv_jain.jpg" class="card-img" alt=""> </a>
+                            <div class="card-body">
+                                <i class="fa-solid fa-heart"></i>
+                                <p>87% &ThinSpace; 34K votes</p>
+                            </div>
+                            <a href="seat-booking.html" class="book-btn">Book Tickets</a>
+                        </div>
+                        <h3>ANUV JAIN</h3>
+                        <p class="detail">Bollywood | Hindi | 3hrs
+                            <p>15-March-25 at 5:00 PM</p>
+                        </p>
+                    </div>
+
+                    
+
+                </div>
+            </div>
+
+            <footer class="footer">
+                <div class="social-links">
+                    <a href="#" class="social-link" aria-label="Facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="YouTube">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="Pinterest">
+                        <i class="fab fa-pinterest-p"></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+                <div class="footer-text">
+                    <p>&copy; 2025 TickHub Pvt. Ltd. All Rights Reserved.</p>
+                    <p>Unauthorized use is prohibited.</p>
+                </div>
+            </footer>
+            
+            
+        <!-- End content -->
+
+    </div>
+    <!-- End wrapper -->
+
+    <script src="./script.js"></script>
+    <script>
+    function checkAuthStatus() {
+        const token = localStorage.getItem('token');
+        const userId = localStorage.getItem('userId');
+        const userProfile = document.querySelector('.user-profile');
+        const username = document.querySelector('.username');
+
+        if (token && userId) {
+            // User is logged in
+            userProfile.style.display = 'flex';
+            username.textContent = localStorage.getItem('userName') || 'User';
+        } else {
+            // User is not logged in
+            window.location.href = 'auth.html'; // Redirect to login page
+        }
+    }
+
+    function handleLogout() {
+        // Clear all user-related data from localStorage
+        localStorage.removeItem('token');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('selectedSeats');
+        localStorage.removeItem('totalAmount');
+        localStorage.removeItem('bookingDetails');
+        
+        // Redirect to login page
+        window.location.href = 'auth.html';
+    }
+
+    // Check auth status when page loads
+    document.addEventListener('DOMContentLoaded', checkAuthStatus);
+    </script>
+
+</body>
+
+</html>

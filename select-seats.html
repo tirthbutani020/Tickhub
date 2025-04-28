@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Seats - TickHub</title>
+    <link rel="stylesheet" href="seat-booking.css">
+    <link rel="icon" type="image/x-icon" href="images/Web_logo.jpg">
+</head>
+<body>
+    <div class="container">
+        <div class="movie-info">
+            <h1 id="movieTitle">Movie Title</h1>
+            <div class="selected-info">
+                <p id="selectedTheater">Shaan Cinema Anand</p>
+                <p id="selectedDateTime">Date: <span id="showDate"></span> | Time: <span id="showTime"></span></p>
+            </div>
+        </div>
+
+        <div class="price-category">
+            <div class="price-item">Premium<span>₹1</span></div>
+            <div class="price-item">Executive<span>₹2</span></div>
+            <div class="price-item">Normal<span>₹3</span></div>
+        </div>
+
+        <div class="theater-layout">
+            <div class="screen">SCREEN</div>
+            <div class="seats-container" id="seatsContainer">
+                <!-- Premium Section -->
+                <div class="section-label">Premium</div>
+                <div class="row">
+                    <div class="row-label">A</div>
+                    <div class="seat" data-seat="A1">1</div>
+                    <div class="seat" data-seat="A2">2</div>
+                    <div class="seat" data-seat="A3">3</div>
+                    <div class="seat occupied" data-seat="A4">4</div>
+                    <div class="seat occupied" data-seat="A5">5</div>
+                    <div class="seat" data-seat="A6">6</div>
+                    <div class="seat" data-seat="A7">7</div>
+                    <div class="seat" data-seat="A8">8</div>
+                </div>
+                <div class="row">
+                    <div class="row-label">B</div>
+                    <div class="seat" data-seat="B1">1</div>
+                    <div class="seat" data-seat="B2">2</div>
+                    <div class="seat" data-seat="B3">3</div>
+                    <div class="seat" data-seat="B4">4</div>
+                    <div class="seat" data-seat="B5">5</div>
+                    <div class="seat" data-seat="B6">6</div>
+                    <div class="seat" data-seat="B7">7</div>
+                    <div class="seat" data-seat="B8">8</div>
+                </div>
+
+                <!-- Executive Section -->
+                <div class="section-label">Executive</div>
+                <div class="row">
+                    <div class="row-label">C</div>
+                    <div class="seat" data-seat="C1">1</div>
+                    <div class="seat occupied" data-seat="C2">2</div>
+                    <div class="seat occupied" data-seat="C3">3</div>
+                    <div class="seat" data-seat="C4">4</div>
+                    <div class="seat" data-seat="C5">5</div>
+                    <div class="seat" data-seat="C6">6</div>
+                    <div class="seat" data-seat="C7">7</div>
+                    <div class="seat" data-seat="C8">8</div>
+                </div>
+                <div class="row">
+                    <div class="row-label">D</div>
+                    <div class="seat" data-seat="D1">1</div>
+                    <div class="seat" data-seat="D2">2</div>
+                    <div class="seat" data-seat="D3">3</div>
+                    <div class="seat" data-seat="D4">4</div>
+                    <div class="seat occupied" data-seat="D5">5</div>
+                    <div class="seat" data-seat="D6">6</div>
+                    <div class="seat" data-seat="D7">7</div>
+                    <div class="seat" data-seat="D8">8</div>
+                </div>
+
+                <!-- Normal Section -->
+                <div class="section-label">Normal</div>
+                <div class="row">
+                    <div class="row-label">E</div>
+                    <div class="seat" data-seat="E1">1</div>
+                    <div class="seat" data-seat="E2">2</div>
+                    <div class="seat occupied" data-seat="E3">3</div>
+                    <div class="seat" data-seat="E4">4</div>
+                    <div class="seat" data-seat="E5">5</div>
+                    <div class="seat" data-seat="E6">6</div>
+                    <div class="seat" data-seat="E7">7</div>
+                    <div class="seat" data-seat="E8">8</div>
+                </div>
+                <div class="row">
+                    <div class="row-label">F</div>
+                    <div class="seat" data-seat="F1">1</div>
+                    <div class="seat" data-seat="F2">2</div>
+                    <div class="seat" data-seat="F3">3</div>
+                    <div class="seat occupied" data-seat="F4">4</div>
+                    <div class="seat occupied" data-seat="F5">5</div>
+                    <div class="seat" data-seat="F6">6</div>
+                    <div class="seat" data-seat="F7">7</div>
+                    <div class="seat" data-seat="F8">8</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-box legend-available"></div>
+                <span>Available</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box legend-selected"></div>
+                <span>Selected</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box legend-occupied"></div>
+                <span>Occupied</span>
+            </div>
+        </div>
+
+        <div class="booking-summary">
+            <div class="summary-text">
+                Selected Seats: <span id="selectedSeats">None</span><br>
+                Total Amount: ₹<span id="totalAmount">0</span>
+            </div>
+            <button class="book-btn" onclick="confirmBooking()">Book Tickets</button>
+        </div>
+    </div>
+
+    <script>
+        // Load selected date, time and theater from localStorage
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectedDate = localStorage.getItem('selectedDate');
+            const selectedTime = localStorage.getItem('selectedTime');
+            const selectedTheater = localStorage.getItem('selectedTheater');
+            
+            document.getElementById('selectedTheater').textContent = selectedTheater || 'Theater not selected';
+            document.getElementById('showDate').textContent = selectedDate || 'Not selected';
+            document.getElementById('showTime').textContent = selectedTime || 'Not selected';
+        });
+
+        // Rest of your seat booking JavaScript code here
+    </script>
+</body>
+</html> 

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Details</title>
+    <link rel="stylesheet" href="movie_style.css">
+    <link rel="icon" type="image/x-icon" href="images/Web_logo.jpg">
+</head>
+<body>
+
+    <div class="overlay"></div> <!-- Black Overlay -->
+    
+    <div class="movie-container">
+        <!-- Left: Poster with Play Button -->
+        <div class="poster-container">
+            <a href="#" class="trailer-link">
+                <img src="images/movie1.jpeg" alt="Movie Poster">
+                <div class="play-button">&#9658;</div>
+            </a>
+            <p class="watch-trailer-text">Watch Trailer</p>
+        </div>
+
+        <!-- Right: Movie Details -->
+        <div class="details-container">
+            <h1>Movie Title</h1>
+            <p><strong>Duration:</strong> 3h 30m</p>
+            <p><strong>Genre:</strong> Action, Drama</p>
+            <p><strong>Language:</strong> Hindi</p>
+            <p><strong>Director:</strong> Sukumar</p>
+            <p><strong>Cast:</strong> Allu Arjun, Rashmika Mandanna, Rao Ramesh</p>
+            <p><strong>IMDb Rating:</strong> ⭐ 9.8/10</p>
+            <p><strong>Synopsis:</strong> The clash is on as Pushpa and Bhanwar Singh continue their rivalry in this epic conclusion to the two-parted action drama.</p>
+            
+            <!-- Book Tickets Button (Bottom Right) -->
+            <div class="book-btn-container">
+                <button class="book-btn" onclick="window.location.href='seat-booking.html'">Book Tickets</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include the movie.js script -->
+    <script src="movie.js"></script>
+</body>
+</html>

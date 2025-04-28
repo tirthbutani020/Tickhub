@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Seats - TickHub</title>
+    <link rel="stylesheet" href="seat-booking.css">
+    <link rel="icon" type="image/x-icon" href="images/Web_logo.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .booking-summary {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            padding: 12px 20px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .selected-seats {
+            background-color: #f0f8ff;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #2c3e50;
+            border: 1px solid #3498db;
+            flex-grow: 1;
+            margin-right: 15px;
+        }
+
+        .total-amount {
+            background-color: #f0fff0;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #27ae60;
+            border: 1px solid #2ecc71;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .proceed-btn {
+            background-color: #ff4757;
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .proceed-btn:hover {
+            background-color: #ff6b81;
+        }
+
+        .seat-info {
+            margin-bottom: 80px; /* Space for fixed bottom bar */
+        }
+
+        /* Seat grid styling */
+        .seat-grid {
+            display: grid;
+            gap: 10px;
+            margin: 20px;
+        }
+
+        .seat {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .seat.executive {
+            background-color: #4b6584;
+            color: white;
+        }
+
+        .seat.normal {
+            background-color: #8e44ad;
+            color: white;
+        }
+
+        .seat.selected {
+            background-color: #27ae60;
+        }
+
+        .seat.booked {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .screen {
+            background-color: #dfe6e9;
+            padding: 10px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .seat-types {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .seat-type {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .seat-type-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="movie-info">
+            <h1 id="movieTitle">Pushpa-2</h1>
+            <div class="booking-details">
+                <p><span id="theaterName">Shaan Cinema Anand</span> • <span id="showDate">Fri 14 FEB</span> • <span id="showTime">05:00 PM</span></p>
+            </div>
+        </div>
+
+        <div class="date-selection" role="group" aria-label="Select date">
+            <button class="date-btn selected" data-date="Fri 14 FEB" aria-pressed="true">Fri 14 FEB</button>
+            <button class="date-btn" data-date="Sat 15 FEB">Sat 15 FEB</button>
+            <button class="date-btn" data-date="Sun 16 FEB">Sun 16 FEB</button>
+            <button class="date-btn" data-date="Mon 17 FEB">Mon 17 FEB</button>
+            <button class="date-btn" data-date="Tue 18 FEB">Tue 18 FEB</button>
+            <button class="date-btn" data-date="Wed 19 FEB">Wed 19 FEB</button>
+            <button class="date-btn" data-date="Thu 20 FEB">Thu 20 FEB</button>
+        </div>
+
+        <div class="showcase" role="group" aria-label="Seat types">
+            <div class="seat-type">
+                <div class="seat-type-indicator" style="background-color: #4b6584;"></div>
+                <span>Executive (₹2)</span>
+            </div>
+            <div class="seat-type">
+                <div class="seat-type-indicator" style="background-color: #8e44ad;"></div>
+                <span>Normal (₹1)</span>
+            </div>
+            <div class="seat-type">
+                <div class="seat-type-indicator" style="background-color: #27ae60;"></div>
+                <span>Selected</span>
+            </div>
+            <div class="seat-type">
+                <div class="seat-type-indicator" style="background-color: #95a5a6;"></div>
+                <span>Booked</span>
+            </div>
+        </div>
+
+        <div class="screen-container">
+            <div class="screen" role="img" aria-label="Movie screen"></div>
+            <p class="screen-text">Screen</p>
+        </div>
+
+        <div class="seating-layout" role="group" aria-label="Seating layout">
+            <!-- Premium Section -->
+            <div class="section" aria-labelledby="premium-section">
+                <p class="section-label" id="premium-section">Premium</p>
+                <div class="row">
+                    <div class="seat premium" role="button" tabindex="0" data-price="3" aria-label="Premium seat P1">P1</div>
+                    <div class="seat premium" role="button" tabindex="0" data-price="3" aria-label="Premium seat P2">P2</div>
+                    <div class="seat premium" role="button" tabindex="0" data-price="3" aria-label="Premium seat P3">P3</div>
+                    <div class="seat premium" role="button" tabindex="0" data-price="3" aria-label="Premium seat P4">P4</div>
+                    <div class="seat premium" role="button" tabindex="0" data-price="3" aria-label="Premium seat P5">P5</div>
+                    <div class="seat premium" role="button" tabindex="0" data-price="3" aria-label="Premium seat P6">P6</div>
+                    <div class="seat premium" role="button" tabindex="0" data-price="3" aria-label="Premium seat P7">P7</div>
+                    <div class="seat premium" role="button" tabindex="0" data-price="3" aria-label="Premium seat P8">P8</div>
+                </div>
+                <div class="row">
+                    <div class="seat premium" role="button" tabindex="0" data-price="3" aria-label="Premium seat P9">P9</div>
+                    <div class="seat premium" role="button" tabindex="0" data-price="3" aria-label="Premium seat P10">P10</div>
+                    <div class="seat premium" role="button" tabindex="0" data-price="3" aria-label="Premium seat P11">P11</div>
+                    <div class="seat premium" role="button" tabindex="0" data-price="3" aria-label="Premium seat P12">P12</div>
+                    <div class="seat premium" role="button" tabindex="0" data-price="3" aria-label="Premium seat P13">P13</div>
+                    <div class="seat premium" role="button" tabindex="0" data-price="3" aria-label="Premium seat P14">P14</div>
+                    <div class="seat premium" role="button" tabindex="0" data-price="3" aria-label="Premium seat P15">P15</div>
+                    <div class="seat premium" role="button" tabindex="0" data-price="3" aria-label="Premium seat P16">P16</div>
+                </div>
+            </div>
+
+            <!-- Executive Section -->
+            <div class="section" aria-labelledby="executive-section">
+                <p class="section-label" id="executive-section">Executive</p>
+                <div class="row">
+                    <div class="seat executive" role="button" tabindex="0" data-price="2" aria-label="Executive seat E1">E1</div>
+                    <div class="seat executive" role="button" tabindex="0" data-price="2" aria-label="Executive seat E2">E2</div>
+                    <div class="seat executive" role="button" tabindex="0" data-price="2" aria-label="Executive seat E3">E3</div>
+                    <div class="seat executive" role="button" tabindex="0" data-price="2" aria-label="Executive seat E4">E4</div>
+                    <div class="seat executive" role="button" tabindex="0" data-price="2" aria-label="Executive seat E5">E5</div>
+                    <div class="seat executive" role="button" tabindex="0" data-price="2" aria-label="Executive seat E6">E6</div>
+                    <div class="seat executive" role="button" tabindex="0" data-price="2" aria-label="Executive seat E7">E7</div>
+                    <div class="seat executive" role="button" tabindex="0" data-price="2" aria-label="Executive seat E8">E8</div>
+                </div>
+                <div class="row">
+                    <div class="seat executive" role="button" tabindex="0" data-price="2" aria-label="Executive seat E9">E9</div>
+                    <div class="seat executive" role="button" tabindex="0" data-price="2" aria-label="Executive seat E10">E10</div>
+                    <div class="seat executive" role="button" tabindex="0" data-price="2" aria-label="Executive seat E11">E11</div>
+                    <div class="seat executive" role="button" tabindex="0" data-price="2" aria-label="Executive seat E12">E12</div>
+                    <div class="seat executive" role="button" tabindex="0" data-price="2" aria-label="Executive seat E13">E13</div>
+                    <div class="seat executive" role="button" tabindex="0" data-price="2" aria-label="Executive seat E14">E14</div>
+                    <div class="seat executive" role="button" tabindex="0" data-price="2" aria-label="Executive seat E15">E15</div>
+                    <div class="seat executive" role="button" tabindex="0" data-price="2" aria-label="Executive seat E16">E16</div>
+                </div>
+            </div>
+
+            <!-- Normal Section -->
+            <div class="section" aria-labelledby="normal-section">
+                <p class="section-label" id="normal-section">NORMAL</p>
+                <div class="row">
+                    <div class="seat normal" role="button" tabindex="0" data-price="1" aria-label="Normal seat N1">N1</div>
+                    <div class="seat normal" role="button" tabindex="0" data-price="1" aria-label="Normal seat N2">N2</div>
+                    <div class="seat normal occupied" role="button" tabindex="0" data-price="1" aria-label="Normal seat N3">N3</div>
+                    <div class="seat normal occupied" role="button" tabindex="0" data-price="1" aria-label="Normal seat N4">N4</div>
+                    <div class="seat normal occupied" role="button" tabindex="0" data-price="1" aria-label="Normal seat N5">N5</div>
+                    <div class="seat normal occupied" role="button" tabindex="0" data-price="1" aria-label="Normal seat N6">N6</div>
+                    <div class="seat normal" role="button" tabindex="0" data-price="1" aria-label="Normal seat N7">N7</div>
+                    <div class="seat normal" role="button" tabindex="0" data-price="1" aria-label="Normal seat N8">N8</div>
+                </div>
+                <div class="row">
+                    <div class="seat normal" role="button" tabindex="0" data-price="1" aria-label="Normal seat N9">N9</div>
+                    <div class="seat normal occupied" role="button" tabindex="0" data-price="1" aria-label="Normal seat N10">N10</div>
+                    <div class="seat normal occupied" role="button" tabindex="0" data-price="1" aria-label="Normal seat N11">N11</div>
+                    <div class="seat normal" role="button" tabindex="0" data-price="1" aria-label="Normal seat N12">N12</div>
+                    <div class="seat normal occupied" role="button" tabindex="0" data-price="1" aria-label="Normal seat N13">N13</div>
+                    <div class="seat normal occupied" role="button" tabindex="0" data-price="1" aria-label="Normal seat N14">N14</div>
+                    <div class="seat normal" role="button" tabindex="0" data-price="1" aria-label="Normal seat N15">N15</div>
+                    <div class="seat normal" role="button" tabindex="0" data-price="1" aria-label="Normal seat N16">N16</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="booking-summary">
+            <div class="selected-seats" id="selectedSeatsDisplay">
+                No seats selected
+            </div>
+            <div class="total-amount" id="totalAmountDisplay">
+                Total Amount: ₹0
+            </div>
+            <button class="proceed-btn" onclick="proceedToPayment()" disabled>
+                PROCEED
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Constants for seat prices
+            const SEAT_PRICES = {
+                'P': 200, // Premium
+                'E': 150, // Executive
+                'N': 100  // Normal
+            };
+
+            // Clear any previous seat selections and amounts
+            localStorage.removeItem('selectedSeats');
+            localStorage.removeItem('totalAmount');
+
+            // Get movie details from localStorage
+            const movieTitle = localStorage.getItem('selectedMovie') || 'Pushpa-2';
+            const theaterName = localStorage.getItem('selectedTheater') || 'Shaan Cinema Anand';
+            const showDate = localStorage.getItem('selectedDate') || 'Fri 14 FEB';
+            const showTime = localStorage.getItem('selectedTime') || '05:00 PM';
+
+            // Update the page with movie details
+            document.getElementById('movieTitle').textContent = movieTitle;
+            document.getElementById('theaterName').textContent = theaterName;
+            document.getElementById('showDate').textContent = showDate;
+            document.getElementById('showTime').textContent = showTime;
+
+            // Date selection functionality with keyboard support
+            const dateButtons = document.querySelectorAll('.date-btn');
+            dateButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    dateButtons.forEach(btn => {
+                        btn.classList.remove('selected');
+                        btn.setAttribute('aria-pressed', 'false');
+                    });
+                    this.classList.add('selected');
+                    this.setAttribute('aria-pressed', 'true');
+                    document.getElementById('showDate').textContent = this.dataset.date;
+                });
+
+                button.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.click();
+                    }
+                });
+            });
+
+            const seats = document.querySelectorAll('.seat');
+            const selectedSeatsElement = document.getElementById('selectedSeatsDisplay');
+            const totalAmountElement = document.getElementById('totalAmountDisplay');
+            const bookButton = document.querySelector('.proceed-btn');
+            let selectedSeatsArray = [];
+            let totalAmount = 0;
+
+            seats.forEach(seat => {
+                seat.addEventListener('click', function() {
+                    if (!this.classList.contains('occupied')) {
+                        // Toggle seat selection
+                        this.classList.toggle('selected');
+                        
+                        // Get seat details
+                        const seatNumber = this.textContent;
+                        const seatType = seatNumber.charAt(0); // P, E, or N
+                        const seatPrice = SEAT_PRICES[seatType];
+                        
+                        if (this.classList.contains('selected')) {
+                            // Add seat to selected array
+                            selectedSeatsArray.push({
+                                number: seatNumber,
+                                price: seatPrice,
+                                type: seatType
+                            });
+                            // Add price to total
+                            totalAmount += seatPrice;
+                            
+                            // Add visual feedback
+                            this.setAttribute('aria-selected', 'true');
+                        } else {
+                            // Remove seat from selected array
+                            selectedSeatsArray = selectedSeatsArray.filter(seat => seat.number !== seatNumber);
+                            // Subtract price from total
+                            totalAmount -= seatPrice;
+                            
+                            // Remove visual feedback
+                            this.setAttribute('aria-selected', 'false');
+                        }
+
+                        // Update display
+                        updateBookingSummary();
+                    }
+                });
+
+                // Add keyboard support
+                seat.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.click();
+                    }
+                });
+            });
+
+            function updateBookingSummary() {
+                if (selectedSeatsArray.length > 0) {
+                    // Sort seats by number for better readability
+                    selectedSeatsArray.sort((a, b) => a.number.localeCompare(b.number));
+                    
+                    // Group seats by row for better display
+                    const seatsByRow = selectedSeatsArray.reduce((acc, seat) => {
+                        const row = seat.number.charAt(0);
+                        if (!acc[row]) {
+                            acc[row] = {
+                                seats: [],
+                                price: SEAT_PRICES[row]
+                            };
+                        }
+                        acc[row].seats.push(seat.number);
+                        return acc;
+                    }, {});
+
+                    // Format seats display by row with prices
+                    const seatsDisplay = Object.entries(seatsByRow)
+                        .map(([row, data]) => {
+                            const rowName = row === 'P' ? 'Premium' : (row === 'E' ? 'Executive' : 'Normal');
+                            return `${rowName}: ${data.seats.join(', ')} (${data.seats.length} × ₹${data.price})`;
+                        })
+                        .join(' | ');
+                    
+                    selectedSeatsElement.textContent = seatsDisplay;
+                    
+                    // Calculate total amount
+                    totalAmount = selectedSeatsArray.reduce((total, seat) => total + seat.price, 0);
+                    
+                    // Update total amount display with number of seats
+                    totalAmountElement.textContent = `₹${totalAmount} (${selectedSeatsArray.length} seats)`;
+                    
+                    // Enable book button
+                    bookButton.removeAttribute('disabled');
+                } else {
+                    // Reset to default state
+                    selectedSeatsElement.textContent = 'No seats selected';
+                    totalAmountElement.textContent = '₹0';
+                    bookButton.setAttribute('disabled', 'true');
+                }
+
+                // Save booking details to localStorage
+                const bookingDetails = {
+                    movie: document.getElementById('movieTitle').textContent,
+                    theater: document.getElementById('theaterName').textContent,
+                    date: document.getElementById('showDate').textContent,
+                    time: document.getElementById('showTime').textContent,
+                    seats: selectedSeatsArray,
+                    totalAmount: totalAmount
+                };
+
+                localStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
+            }
+
+            // Handle booking button click
+            bookButton.addEventListener('click', function() {
+                if (selectedSeatsArray.length === 0) {
+                    alert('Please select at least one seat to proceed.');
+                    return;
+                }
+
+                // Create URL with all parameters
+                const params = new URLSearchParams({
+                    movieName: document.getElementById('movieTitle').textContent,
+                    theaterName: document.getElementById('theaterName').textContent,
+                    showDate: document.getElementById('showDate').textContent,
+                    showTime: document.getElementById('showTime').textContent,
+                    seats: JSON.stringify(selectedSeatsArray),
+                    totalAmount: totalAmount
+                });
+
+                // Redirect to payment page with parameters
+                window.location.href = `payment.html?${params.toString()}`;
+            });
+        });
+    </script>
+</body>
+</html> 

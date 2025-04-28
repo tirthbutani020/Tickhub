@@ -1,0 +1,184 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: url('images/movie1-bg.jpg') no-repeat center center/cover;
+    background-color: #1a1a1a; /* Fallback color if image fails to load */
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    position: relative;
+}
+
+/* Black Overlay */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: -1;
+}
+
+.movie-container {
+    display: flex;
+    width: 80%;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+}
+
+/* Poster Section */
+.poster-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.poster-container img {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+/* Play Button */
+.play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 25px;
+    color: white;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.poster-container:hover .play-button {
+    background: rgba(255, 0, 0, 0.8);
+}
+
+/* Watch Trailer Text */
+.watch-trailer-text {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #ddd;
+}
+
+/* Details Section */
+.details-container {
+    flex: 2;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Movie Information */
+.details-container h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.details-container p {
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.book-btn-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.book-btn {
+    padding: 15px 30px;
+    background: red;
+    color: white;
+    font-size: 18px;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 5px;
+}
+
+.book-btn:hover {
+    background: darkred;
+}
+
+.movie-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(8px) brightness(0.7);
+}
+
+.movie-background::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(26, 26, 26, 0.8), rgba(26, 26, 26, 0.95));
+}
+
+/* Movie-specific background styles */
+.movie-background[data-movie="pushpa2"] {
+    background-image: url('movie1.jpeg');
+}
+
+.movie-background[data-movie="skyforce"] {
+    background-image: url('movie2.jpg');
+}
+
+.movie-background[data-movie="fastx"] {
+    background-image: url('movie3.jpeg');
+}
+
+.movie-background[data-movie="yjhd"] {
+    background-image: url('movie4.jpg');
+}
+
+.movie-background[data-movie="babyjohn"] {
+    background-image: url('movie5.jpeg');
+}
+
+.movie-background[data-movie="divine"] {
+    background-image: url('Divine.jpg');
+}
+
+.movie-background[data-movie="adityagadhvi"] {
+    background-image: url('aditya_gadhvi.jpg');
+}
+
+.movie-background[data-movie="kailashkher"] {
+    background-image: url('kailash_kher.jpg');
+}
+
+.movie-background[data-movie="monalithakur"] {
+    background-image: url('monali_thakur.jpg');
+}
+
+.movie-background[data-movie="anuvjain"] {
+    background-image: url('anuv_jain.jpg');
+}

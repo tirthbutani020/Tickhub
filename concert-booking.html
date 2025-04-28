@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concert Booking - TickHub</title>
+    <link rel="stylesheet" href="concert-booking.css">
+    <link rel="icon" type="image/x-icon" href="images/Web_logo.jpg">
+</head>
+<body>
+    <div class="container">
+        <div class="date-selection-header">
+            <div class="date-selection">
+                <button class="date-btn selected" onclick="changeDate('Feb 14')">Fri 14 FEB</button>
+                <button class="date-btn" onclick="changeDate('Feb 15')">Sat 15 FEB</button>
+                <button class="date-btn" onclick="changeDate('Feb 16')">Sun 16 FEB</button>
+                <button class="date-btn" onclick="changeDate('Feb 17')">Mon 17 FEB</button>
+                <button class="date-btn" onclick="changeDate('Feb 18')">Tue 18 FEB</button>
+            </div>
+        </div>
+
+        <div class="venues-container">
+            <div class="venue-card">
+                <h2>TransStadia Arena</h2>
+                <p class="venue-type">Indoor Stadium | Capacity: 20,000</p>
+                <div class="time-slots">
+                    <button onclick="selectShow('TransStadia Arena', '06:00 PM')" class="time-btn">06:00 PM</button>
+                    <button onclick="selectShow('TransStadia Arena', '08:30 PM')" class="time-btn">08:30 PM</button>
+                </div>
+            </div>
+
+            <div class="venue-card">
+                <h2>Sabarmati Riverfront Event Center</h2>
+                <p class="venue-type">Open Air Venue | Capacity: 15,000</p>
+                <div class="time-slots">
+                    <button onclick="selectShow('Sabarmati Riverfront Event Center', '05:00 PM')" class="time-btn">05:00 PM</button>
+                    <button onclick="selectShow('Sabarmati Riverfront Event Center', '07:30 PM')" class="time-btn">07:30 PM</button>
+                </div>
+            </div>
+
+            <div class="venue-card">
+                <h2>GMDC Ground</h2>
+                <p class="venue-type">Open Air Ground | Capacity: 25,000</p>
+                <div class="time-slots">
+                    <button onclick="selectShow('GMDC Ground', '04:30 PM')" class="time-btn">04:30 PM</button>
+                    <button onclick="selectShow('GMDC Ground', '07:00 PM')" class="time-btn">07:00 PM</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function selectShow(venueName, time) {
+            const selectedDate = document.querySelector('.date-btn.selected').textContent;
+            localStorage.setItem('selectedDate', selectedDate);
+            localStorage.setItem('selectedVenue', venueName);
+            localStorage.setItem('selectedTime', time);
+            window.location.href = 'select-seats.html';
+        }
+
+        function changeDate(date) {
+            document.querySelectorAll('.date-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+        }
+    </script>
+</body>
+</html> 
